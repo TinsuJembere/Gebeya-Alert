@@ -1,0 +1,31 @@
+services:
+  # Backend API Service
+  - type: web
+    name: gebeyaalert-backend
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gebeyaalert-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
+      - key: FRONTEND_URL
+        sync: false  # Set this manually after deploying frontend
+    healthCheckPath: /health
+
+  # PostgreSQL Database
+  - type: pspg
+    name: gebeyaalert-db
+    plan: free
+    databaseName: gebeyaalert
+    user: gebeyaalert_user
+
