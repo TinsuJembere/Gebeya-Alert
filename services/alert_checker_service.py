@@ -13,7 +13,8 @@ from models.notification_log import NotificationLog
 from models.crop import Crop
 from models.market import Market
 from models.user import User
-from services.sms_service import sms_service
+from services.sms_service import get_notification_service
+from services.price_service import PriceService
 
 logger = logging.getLogger(__name__)
 
@@ -105,13 +106,29 @@ class AlertCheckerService:
                 )
                 return False
             
-            # Send SMS
-            success, error = sms_service.send_price_alert(
+            # Get notification service
+            notification_service = get_notification_service()
+            
+            # Get price details for rich SMS content
+            price_details = PriceService.get_latest_prices_with_details(
+                db, limit=100
+            )
+            price_detail = next(
+                (p for p in price_details 
+                 if p['crop_id'] == alert.crop_id and p['market_id'] == alert.market_id),
+                None
+            )
+            
+            # Send SMS with rich content
+            success, error = notification_service.send_price_alert(
                 to_phone=user.phone_number,
                 crop_name=crop.name,
                 market_name=market.name,
                 current_price=float(latest_price.price),
-                target_price=float(alert.target_price)
+                target_price=float(alert.target_price),
+                confidence_score=price_detail.get('confidence_score') if price_detail else None,
+                source=price_detail.get('source') if price_detail else None,
+                price_change_7d=price_detail.get('price_change_7d') if price_detail else None
             )
             
             if not success:
@@ -124,14 +141,21 @@ class AlertCheckerService:
             alert.last_sent_at = datetime.utcnow()
             db.add(alert)
             
+            # Generate full message for logging
+            full_message = notification_service.generate_price_alert_message(
+                crop_name=crop.name,
+                market_name=market.name,
+                current_price=float(latest_price.price),
+                target_price=float(alert.target_price),
+                confidence_score=price_detail.get('confidence_score') if price_detail else None,
+                source=price_detail.get('source') if price_detail else None,
+                price_change_7d=price_detail.get('price_change_7d') if price_detail else None
+            )
+            
             # Log notification
             notification_log = NotificationLog(
                 user_id=user.id,
-                message=(
-                    f"Price Alert: {crop.name} at {market.name} "
-                    f"is now {latest_price.price:.2f} ETB. "
-                    f"Your target: {alert.target_price:.2f} ETB"
-                )
+                message=full_message
             )
             db.add(notification_log)
             

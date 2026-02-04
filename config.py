@@ -9,8 +9,10 @@ class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
     
     # Database
-    # Defaults to SQLite for development, use PostgreSQL for production
-    DATABASE_URL: str = "sqlite:///./gebeyaalert.db"
+    # If DATABASE_URL is set (e.g., PostgreSQL), use it; otherwise default to SQLite for local development
+    # PostgreSQL format: postgresql://user:password@host:port/database
+    # SQLite format: sqlite:///./gebeyaalert.db
+    DATABASE_URL: Optional[str] = None
     
     # JWT
     # Defaults to a development key - MUST be changed in production!
@@ -21,18 +23,18 @@ class Settings(BaseSettings):
     # Application
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
-    
-    # Optional: PostgreSQL URL for production (overrides DATABASE_URL if set)
-    DATABASE_URL_PROD: Optional[str] = None
     API_V1_PREFIX: str = "/api/v1"
     FRONTEND_URL: Optional[str] = None  # Frontend URL for CORS (e.g., "http://localhost:3000")
     PORT: int = 8080  # Server port (can be overridden by PORT env var for deployment)
     
-    # Twilio SMS
+    # SMS Configuration
+    SMS_PROVIDER: str = "console"  # Options: "console" (demo) or "twilio" (production)
+    SMS_ENABLED: bool = False  # Set to True to enable SMS sending (for Twilio)
+    
+    # Twilio SMS (only required if SMS_PROVIDER=twilio)
     TWILIO_ACCOUNT_SID: Optional[str] = None
     TWILIO_AUTH_TOKEN: Optional[str] = None
     TWILIO_PHONE_NUMBER: Optional[str] = None
-    SMS_ENABLED: bool = False  # Set to True to enable SMS sending
     
     # Celery (optional, defaults to Redis)
     CELERY_BROKER_URL: str = "redis://localhost:6379/0"
@@ -46,13 +48,14 @@ class Settings(BaseSettings):
     
     def get_database_url(self) -> str:
         """
-        Get the appropriate database URL based on environment.
-        - Development: Uses SQLite (default)
-        - Production: Uses DATABASE_URL_PROD if set, otherwise DATABASE_URL
+        Get the appropriate database URL based on environment variables.
+        - If DATABASE_URL is set (e.g., PostgreSQL), use it
+        - Otherwise, default to SQLite for local development
         """
-        if self.ENVIRONMENT == "production" and self.DATABASE_URL_PROD:
-            return self.DATABASE_URL_PROD
-        return self.DATABASE_URL
+        if self.DATABASE_URL:
+            return self.DATABASE_URL
+        # Default to SQLite for local development
+        return "sqlite:///./gebeyaalert.db"
 
 
 settings = Settings()

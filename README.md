@@ -338,9 +338,9 @@ When deploying to production, make sure to set these environment variables:
 **Backend (.env):**
 ```env
 # Use PostgreSQL for production
+# Set DATABASE_URL to your PostgreSQL connection string
 DATABASE_URL=postgresql://user:password@host:5432/dbname
-# OR use DATABASE_URL_PROD (will override DATABASE_URL when ENVIRONMENT=production)
-# DATABASE_URL_PROD=postgresql://user:password@host:5432/dbname
+# If DATABASE_URL is not set, SQLite will be used automatically (for local development)
 
 SECRET_KEY=<generate-a-strong-random-key>
 ENVIRONMENT=production
@@ -399,22 +399,25 @@ On most platforms, you can run these as separate services or use process manager
 
 When deploying to production, switch to PostgreSQL:
 
-1. **Set environment variables:**
+1. **Set DATABASE_URL environment variable:**
    ```env
-   ENVIRONMENT=production
-   DATABASE_URL_PROD=postgresql://user:password@host:5432/dbname
-   ```
-
-2. **Or use DATABASE_URL directly:**
-   ```env
-   ENVIRONMENT=production
    DATABASE_URL=postgresql://user:password@host:5432/dbname
+   ENVIRONMENT=production
+   DEBUG=False
    ```
 
-3. **Run migrations:**
+2. **The app automatically:**
+   - Detects PostgreSQL from the `DATABASE_URL` connection string
+   - Creates tables on startup (via `init_db()`)
+   - Configures connection pooling for PostgreSQL
+
+3. **Initialize data (after first deployment):**
    ```bash
-   alembic upgrade head
+   python scripts/seed_data.py
+   python scripts/create_admin.py +1234567890 yourpassword
    ```
+
+**Note:** If `DATABASE_URL` is not set, the app defaults to SQLite for local development. Set `DATABASE_URL` to use PostgreSQL in production.
 
 The system automatically detects SQLite vs PostgreSQL and configures connection pooling accordingly.
 

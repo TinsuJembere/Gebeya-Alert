@@ -53,4 +53,13 @@ Thumbs.db
 
 # Alembic
 alembic/versions/*.pyc
+
+pages
 scripts/create_admin.py
+CORS_TROUBLESHOOTING.md
+CREATE_ADMIN.md
+FIX_DATABASE_COLUMNS.md
+LOCAL_DEVELOPMENT.md
+FRONTEND_AI_FEATURES.md
+QUICKSTART.md
+SMS_DEMO_GUIDE.md

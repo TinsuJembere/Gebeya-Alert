@@ -95,12 +95,8 @@ export default function AdminDashboard() {
     <div className="flex min-h-screen bg-gray-50 font-sans">
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r border-gray-100 flex flex-col fixed h-full">
-        <div className="p-6 flex items-center gap-2">
-          <div className="bg-[#4ce434] p-1.5 rounded-lg">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-              <path d="M12 3L4 21h16L12 3z" />
-            </svg>
-          </div>
+        <div className="p-6 flex items-center gap-1">
+          <span className="text-2xl">🌿</span>
           <span className="text-[#4ce434] font-bold text-lg">GebeyaAlert</span>
         </div>
 
