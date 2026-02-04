@@ -25,7 +25,6 @@ app = FastAPI(
 # Note: Cannot use allow_origins=["*"] with allow_credentials=True
 # So we allow common development origins explicitly
 allowed_origins = [
-    "https://gebeya-alert-gg73.vercel.app/",
     "http://localhost:3000",
     "http://localhost:3001",
     "http://127.0.0.1:3000",
@@ -33,13 +32,25 @@ allowed_origins = [
 ]
 
 # Add frontend URL from config if specified (for production)
+# Handle both with and without trailing slash
 if settings.FRONTEND_URL:
-    if settings.FRONTEND_URL not in allowed_origins:
-        allowed_origins.append(settings.FRONTEND_URL)
-    # Also add without trailing slash
-    frontend_no_slash = settings.FRONTEND_URL.rstrip('/')
-    if frontend_no_slash not in allowed_origins:
-        allowed_origins.append(frontend_no_slash)
+    frontend_url = settings.FRONTEND_URL.rstrip('/')
+    if frontend_url not in allowed_origins:
+        allowed_origins.append(frontend_url)
+    # Also add with trailing slash for compatibility
+    frontend_with_slash = f"{frontend_url}/"
+    if frontend_with_slash not in allowed_origins:
+        allowed_origins.append(frontend_with_slash)
+
+# Also allow common Vercel patterns (for dynamic deployments)
+# This handles cases where FRONTEND_URL might not be set
+vercel_patterns = [
+    "https://gebeya-alert-gg73.vercel.app",
+    "https://gebeya-alert-gg73.vercel.app/",
+]
+for pattern in vercel_patterns:
+    if pattern not in allowed_origins:
+        allowed_origins.append(pattern)
 
 # Debug: Print allowed origins
 if settings.DEBUG:
@@ -82,9 +93,11 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
 
 # Use specific origins to allow credentials (needed for cookies/auth tokens)
 # CORS middleware must be added BEFORE other middleware to handle preflight requests
+# Use regex pattern to allow all Vercel deployments and localhost
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origin_regex=r"https://gebeya-alert.*\.vercel\.app|http://localhost:\d+|http://127\.0\.0\.1:\d+",
+    allow_origins=allowed_origins,  # Fallback for exact matches
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
