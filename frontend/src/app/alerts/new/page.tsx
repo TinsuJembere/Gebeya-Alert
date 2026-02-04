@@ -115,7 +115,7 @@ export default function NewAlertPage() {
             </svg>
           </div>
           <h2 className="text-xl font-semibold text-gray-900 mb-1">Alert Created!</h2>
-          <p className="text-gray-600">We'll notify you when the price hits your target.</p>
+          <p className="text-gray-600">We&apos;ll notify you when the price hits your target.</p>
         </div>
       </div>
     )

@@ -107,7 +107,7 @@ export default function AlertsPage() {
 
         {!loading && alerts.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 mb-4">You don't have any alerts yet.</p>
+            <p className="text-gray-500 mb-4">You don&apos;t have any alerts yet.</p>
             <Link
               href="/alerts/new"
               className="inline-block px-6 py-3 bg-[#4ce434] text-white font-bold rounded-xl hover:bg-[#45cc2f] transition-colors"

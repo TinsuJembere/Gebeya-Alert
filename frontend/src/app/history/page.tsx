@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -42,39 +42,7 @@ export default function PricesPage() {
   const [loading, setLoading] = useState(true)
   const [loadingHistory, setLoadingHistory] = useState(false)
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login')
-      return
-    }
-    fetchCropsAndMarkets()
-  }, [isAuthenticated, router])
-
-  useEffect(() => {
-    if (selectedCropId && selectedMarketId) {
-      fetchPriceHistory()
-    }
-  }, [selectedCropId, selectedMarketId, timeRange])
-
-  const fetchCropsAndMarkets = async () => {
-    try {
-      setLoading(true)
-      const [cropsData, marketsData] = await Promise.all([
-        apiClient.getCrops(),
-        apiClient.getMarkets(),
-      ])
-      setCrops(cropsData)
-      setMarkets(marketsData)
-      if (cropsData.length > 0) setSelectedCropId(cropsData[0].id)
-      if (marketsData.length > 0) setSelectedMarketId(marketsData[0].id)
-    } catch (err) {
-      console.error('Failed to fetch data:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const fetchPriceHistory = async () => {
+  const fetchPriceHistory = useCallback(async () => {
     if (!selectedCropId || !selectedMarketId) return
 
     try {
@@ -103,6 +71,38 @@ export default function PricesPage() {
       console.error('Failed to fetch price history:', err)
     } finally {
       setLoadingHistory(false)
+    }
+  }, [selectedCropId, selectedMarketId, timeRange])
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login')
+      return
+    }
+    fetchCropsAndMarkets()
+  }, [isAuthenticated, router])
+
+  useEffect(() => {
+    if (selectedCropId && selectedMarketId) {
+      fetchPriceHistory()
+    }
+  }, [selectedCropId, selectedMarketId, fetchPriceHistory])
+
+  const fetchCropsAndMarkets = async () => {
+    try {
+      setLoading(true)
+      const [cropsData, marketsData] = await Promise.all([
+        apiClient.getCrops(),
+        apiClient.getMarkets(),
+      ])
+      setCrops(cropsData)
+      setMarkets(marketsData)
+      if (cropsData.length > 0) setSelectedCropId(cropsData[0].id)
+      if (marketsData.length > 0) setSelectedMarketId(marketsData[0].id)
+    } catch (err) {
+      console.error('Failed to fetch data:', err)
+    } finally {
+      setLoading(false)
     }
   }
 

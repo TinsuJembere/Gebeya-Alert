@@ -245,7 +245,7 @@ export default function AdminDashboard() {
             </div>
 
             <div ref={pricesRef} className="pt-4">
-              <h2 className="font-bold text-gray-800 mb-4">Price Management - Add Today's Price</h2>
+              <h2 className="font-bold text-gray-800 mb-4">Price Management - Add Today&apos;s Price</h2>
               <div className="bg-white border border-gray-100 rounded-[2rem] p-8 shadow-sm">
                 <PriceForm crops={crops} markets={markets} onSuccess={fetchData} />
               </div>
