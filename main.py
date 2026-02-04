@@ -25,6 +25,7 @@ app = FastAPI(
 # Note: Cannot use allow_origins=["*"] with allow_credentials=True
 # So we allow common development origins explicitly
 allowed_origins = [
+    "https://gebeya-alert-gg73.vercel.app/",
     "http://localhost:3000",
     "http://localhost:3001",
     "http://127.0.0.1:3000",
