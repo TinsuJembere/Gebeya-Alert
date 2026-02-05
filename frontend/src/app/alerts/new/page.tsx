@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { apiClient } from '@/lib/api'
 import Header from '@/components/Header'
 
@@ -20,6 +21,7 @@ interface Market {
 
 export default function NewAlertPage() {
   const { isAuthenticated } = useAuth()
+  const { t } = useLanguage()
   const router = useRouter()
 
   const [crops, setCrops] = useState<Crop[]>([])
@@ -53,7 +55,7 @@ export default function NewAlertPage() {
       if (marketsData.length > 0) setSelectedMarket(marketsData[0].id)
     } catch (err) {
       console.error('Failed to fetch data:', err)
-      setError('Failed to load crops and markets')
+      setError(t('failedToLoadCropsMarkets'))
     } finally {
       setLoading(false)
     }
@@ -66,7 +68,7 @@ export default function NewAlertPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedCrop || !selectedMarket) {
-      setError('Please select both a crop and a market')
+      setError(t('pleaseSelectCropAndMarket'))
       return
     }
     
@@ -81,7 +83,7 @@ export default function NewAlertPage() {
       setSuccess(true)
       setTimeout(() => router.push('/alerts'), 1200)
     } catch (err: any) {
-      let errorMessage = 'Failed to save alert. Please try again.'
+      let errorMessage = t('failedToSaveAlert')
       if (err.response?.data?.detail) {
         const detail = err.response.data.detail
         if (typeof detail === 'string') {
@@ -114,8 +116,8 @@ export default function NewAlertPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-1">Alert Created!</h2>
-          <p className="text-gray-600">We&apos;ll notify you when the price hits your target.</p>
+          <h2 className="text-xl font-semibold text-gray-900 mb-1">{t('alertCreated')}</h2>
+          <p className="text-gray-600">{t('alertCreatedMessage')}</p>
         </div>
       </div>
     )
@@ -131,13 +133,13 @@ export default function NewAlertPage() {
           className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 space-y-8"
         >
           <div className="text-center">
-            <p className="text-sm text-green-500 font-medium">Price Alert</p>
-            <h1 className="text-2xl font-semibold mt-1">Set Price Alert</h1>
+            <p className="text-sm text-green-500 font-medium">{t('priceAlert')}</p>
+            <h1 className="text-2xl font-semibold mt-1">{t('setPriceAlert')}</h1>
           </div>
 
           {/* Crops */}
           <div className="space-y-3">
-            <h2 className="text-sm font-semibold text-gray-800">Select Crop</h2>
+            <h2 className="text-sm font-semibold text-gray-800">{t('selectCrop')}</h2>
             <div className="grid grid-cols-3 gap-3">
               {crops.map((crop) => {
                 const active = selectedCrop === crop.id
@@ -161,7 +163,7 @@ export default function NewAlertPage() {
 
           {/* Markets */}
           <div className="space-y-3">
-            <h2 className="text-sm font-semibold text-gray-800">Select Market</h2>
+            <h2 className="text-sm font-semibold text-gray-800">{t('selectMarket')}</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {markets.map((market) => {
                 const active = selectedMarket === market.id
@@ -185,7 +187,7 @@ export default function NewAlertPage() {
 
           {/* Target price */}
           <div className="space-y-3">
-            <h2 className="text-sm font-semibold text-gray-800">Target Price (ETB)</h2>
+            <h2 className="text-sm font-semibold text-gray-800">{t('targetPriceEtb')}</h2>
             <div className="flex items-center gap-2">
               <button
                 type="button"
@@ -225,7 +227,7 @@ export default function NewAlertPage() {
             disabled={saving || !selectedCrop || !selectedMarket}
             className="w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {saving ? 'Saving...' : 'Save Alert'}
+            {saving ? t('saving') : t('saveAlert')}
           </button>
         </form>
       </div>
@@ -235,19 +237,19 @@ export default function NewAlertPage() {
         <div className="max-w-6xl mx-auto px-6 py-3 flex justify-around text-[10px] uppercase font-bold">
           <Link href="/dashboard" className="flex flex-col items-center gap-1 text-gray-400">
             <span className="text-xl">🏠</span>
-            <span>Home</span>
+            <span>{t('home')}</span>
           </Link>
           <Link href="/alerts" className="flex flex-col items-center gap-1 text-[#4ce434]">
             <span className="text-xl">🔔</span>
-            <span>Alerts</span>
+            <span>{t('alerts')}</span>
           </Link>
           <Link href="/history" className="flex flex-col items-center gap-1 text-gray-400">
             <span className="text-xl">🕐</span>
-            <span>History</span>
+            <span>{t('history')}</span>
           </Link>
           <Link href="/settings" className="flex flex-col items-center gap-1 text-gray-400">
             <span className="text-xl">⚙️</span>
-            <span>Settings</span>
+            <span>{t('settings')}</span>
           </Link>
         </div>
       </nav>

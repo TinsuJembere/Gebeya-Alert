@@ -10,10 +10,10 @@ import Header from "@/components/Header";
 import BottomNavigation from "@/components/BottomNavigation";
 
 const languages = [
-  { code: "en", name: "English" },
-  { code: "am", name: "Amharic" },
-  { code: "om", name: "Afaan Oromo" },
-  { code: "ti", name: "Tigrinya" },
+  { code: "en", nameKey: "english" },
+  { code: "am", nameKey: "amharic" },
+  { code: "om", nameKey: "afaanOromo" },
+  { code: "ti", nameKey: "tigrinya" },
 ];
 
 export default function SettingsPage() {
@@ -104,16 +104,16 @@ export default function SettingsPage() {
       <Header />
 
       <main className="max-w-2xl mx-auto w-full px-6 py-10 flex-grow">
-        <h1 className="text-3xl font-bold text-gray-900 mb-10">Settings</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-10">{t('settings')}</h1>
 
         <form onSubmit={handleSubmit} className="space-y-12">
           {/* Account Information Section */}
           <section>
-            <h2 className="text-lg font-bold text-gray-800 mb-2">Account Information</h2>
+            <h2 className="text-lg font-bold text-gray-800 mb-2">{t('accountInformation')}</h2>
             <div className="border-t border-gray-200 pt-6">
               <div className="flex flex-col md:flex-row md:items-center mb-6">
                 <label className="w-40 text-gray-700 font-medium mb-2 md:mb-0">
-                  Phone Number
+                  {t('phoneNumber')}
                 </label>
                 <div className="flex-grow">
                   <input
@@ -124,7 +124,7 @@ export default function SettingsPage() {
                     placeholder="+251912345678"
                   />
                   <p className="text-xs text-blue-500 mt-1">
-                    Used for SMS alerts.
+                    {t('usedForSmsAlerts')}
                   </p>
                 </div>
               </div>
@@ -133,11 +133,11 @@ export default function SettingsPage() {
 
           {/* Preferences Section */}
           <section>
-            <h2 className="text-lg font-bold text-gray-800 mb-2">Preferences</h2>
+            <h2 className="text-lg font-bold text-gray-800 mb-2">{t('preferences')}</h2>
             <div className="border-t border-gray-200 pt-6 space-y-6">
               <div className="flex flex-col md:flex-row md:items-center">
                 <label className="w-40 text-gray-700 font-medium mb-2 md:mb-0">
-                  App Language
+                  {t('appLanguage')}
                 </label>
                 <div className="relative flex-grow">
                   <select
@@ -147,7 +147,7 @@ export default function SettingsPage() {
                   >
                     {languages.map((lang) => (
                       <option key={lang.code} value={lang.code}>
-                        {lang.name}
+                        {t(lang.nameKey as any)}
                       </option>
                     ))}
                   </select>

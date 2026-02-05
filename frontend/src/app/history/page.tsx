@@ -128,12 +128,12 @@ export default function PricesPage() {
       <Header />
 
       <main className="max-w-3xl mx-auto w-full px-6 py-8 flex-grow text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Price History</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('priceHistory')}</h1>
 
         {/* Filters */}
         <div className="grid grid-cols-2 gap-6 mb-8 text-left">
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-800">Select Crop</label>
+            <label className="text-sm font-bold text-gray-800">{t('selectCropHistory')}</label>
             <select
               value={selectedCropId || ''}
               onChange={(e) => setSelectedCropId(parseInt(e.target.value))}
@@ -147,7 +147,7 @@ export default function PricesPage() {
             </select>
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-800">Select Market</label>
+            <label className="text-sm font-bold text-gray-800">{t('selectMarketHistory')}</label>
             <select
               value={selectedMarketId || ''}
               onChange={(e) => setSelectedMarketId(parseInt(e.target.value))}
@@ -165,9 +165,9 @@ export default function PricesPage() {
         {/* Time Range Selector */}
         <div className="flex justify-center gap-3 mb-10">
           {[
-            { label: '1 Week', days: 7 },
-            { label: '1 Month', days: 30 },
-            { label: '3 Months', days: 90 },
+            { label: t('oneWeek'), days: 7 },
+            { label: t('oneMonth'), days: 30 },
+            { label: t('threeMonths'), days: 90 },
           ].map((range) => (
             <button
               key={range.days}
@@ -185,19 +185,19 @@ export default function PricesPage() {
 
         {/* Chart Container */}
         {loadingHistory && (
-          <div className="text-center py-12 text-gray-500">Loading price history...</div>
+          <div className="text-center py-12 text-gray-500">{t('loadingPriceHistory')}</div>
         )}
 
         {!loadingHistory && chartData.length === 0 && (
           <div className="text-center py-12 text-gray-500">
-            No price data available for the selected period.
+            {t('noPriceData')}
           </div>
         )}
 
         {!loadingHistory && chartData.length > 0 && (
           <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm mb-6 text-left">
             <h2 className="text-lg font-bold text-gray-800 mb-6">
-              {selectedCrop?.name} Price Trend in {selectedMarket?.name}
+              {selectedCrop?.name} {t('priceTrendIn')} {selectedMarket?.name}
             </h2>
 
             <div className="h-72 w-full">
@@ -250,7 +250,7 @@ export default function PricesPage() {
 
         {!loadingHistory && chartData.length > 0 && (
           <p className="text-gray-500 text-sm italic">
-            {selectedCrop?.name} prices in {selectedMarket?.name} over the selected period.
+            {selectedCrop?.name} {t('pricesInOverPeriod')} {selectedMarket?.name} {t('overSelectedPeriod')}
           </p>
         )}
       </main>

@@ -71,7 +71,7 @@ export default function AlertsPage() {
       closeDeleteModal()
     } catch (err) {
       console.error('Failed to delete alert:', err)
-      alert('Failed to delete alert. Please try again.')
+      alert(t('failedToDeleteAlert'))
     } finally {
       setDeleting(false)
     }
@@ -92,27 +92,27 @@ export default function AlertsPage() {
 
       <main className="max-w-3xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800">My Active Alerts</h1>
+          <h1 className="text-2xl font-bold text-gray-800">{t('myActiveAlerts')}</h1>
           <Link
             href="/alerts/new"
             className="px-4 py-2 bg-[#4ce434] text-white font-bold rounded-xl hover:bg-[#45cc2f] transition-colors"
           >
-            + New Alert
+            {t('newAlert')}
           </Link>
         </div>
 
         {loading && (
-          <div className="text-center py-8 text-gray-500">Loading alerts...</div>
+          <div className="text-center py-8 text-gray-500">{t('loadingAlerts')}</div>
         )}
 
         {!loading && alerts.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 mb-4">You don&apos;t have any alerts yet.</p>
+            <p className="text-gray-500 mb-4">{t('noAlerts')}</p>
             <Link
               href="/alerts/new"
               className="inline-block px-6 py-3 bg-[#4ce434] text-white font-bold rounded-xl hover:bg-[#45cc2f] transition-colors"
             >
-              Create Your First Alert
+              {t('createFirstAlert')}
             </Link>
           </div>
         )}
@@ -137,7 +137,7 @@ export default function AlertsPage() {
                       : 'bg-[#f3f4f6] text-gray-500'
                   }`}
                 >
-                  {alert.is_met ? 'Met' : 'Active'}
+                  {alert.is_met ? t('met') : t('active')}
                 </span>
               </div>
 
@@ -150,7 +150,7 @@ export default function AlertsPage() {
 
               <div className="flex justify-between items-end mt-4 mb-6">
                 <div>
-                  <p className="text-gray-400 text-xs font-bold uppercase mb-1">Current Price</p>
+                  <p className="text-gray-400 text-xs font-bold uppercase mb-1">{t('currentPrice')}</p>
                   <div className="text-4xl font-extrabold text-gray-900">
                     {alert.current_price !== null
                       ? `${alert.current_price.toFixed(0)}`
@@ -159,7 +159,7 @@ export default function AlertsPage() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-gray-400 text-xs font-bold uppercase mb-1">Target Price</p>
+                  <p className="text-gray-400 text-xs font-bold uppercase mb-1">{t('targetPrice')}</p>
                   <div className="text-2xl font-bold text-gray-400">
                     {alert.target_price.toFixed(0)} ETB
                   </div>
@@ -187,7 +187,7 @@ export default function AlertsPage() {
                     <line x1="10" y1="11" x2="10" y2="17"></line>
                     <line x1="14" y1="11" x2="14" y2="17"></line>
                   </svg>
-                  Delete
+                  {t('delete')}
                 </button>
               </div>
             </div>
@@ -206,9 +206,9 @@ export default function AlertsPage() {
             >
               ✕
             </button>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Confirm Deletion</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">{t('confirmDeletion')}</h2>
             <p className="text-gray-500 mb-8">
-              Are you sure you want to delete this alert? This action cannot be undone.
+              {t('deleteAlertConfirm')}
             </p>
             <div className="flex gap-4">
               <button
@@ -216,14 +216,14 @@ export default function AlertsPage() {
                 disabled={deleting}
                 className="flex-1 py-3 border border-gray-200 rounded-xl font-bold text-gray-600 hover:bg-gray-50 disabled:opacity-50"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={handleDelete}
                 disabled={deleting}
                 className="flex-1 py-3 bg-[#e63946] text-white rounded-xl font-bold hover:bg-red-600 disabled:opacity-50"
               >
-                {deleting ? 'Deleting...' : 'Delete Alert'}
+                {deleting ? t('deleting') : t('deleteAlertButton')}
               </button>
             </div>
           </div>

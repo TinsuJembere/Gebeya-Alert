@@ -1,5 +1,7 @@
 'use client'
 
+import { useLanguage } from '@/contexts/LanguageContext'
+
 interface PriceCardProps {
   cropName: string
   marketName: string
@@ -17,18 +19,20 @@ export default function PriceCard({
   confidenceScore,
   updatedAt,
 }: PriceCardProps) {
+  const { t } = useLanguage()
+  
   const formatTimeAgo = (dateStr: string | undefined) => {
     if (!dateStr) return ''
     try {
       const date = new Date(dateStr)
       const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000)
-      if (seconds < 60) return 'Just now'
+      if (seconds < 60) return t('justNow')
       const minutes = Math.floor(seconds / 60)
-      if (minutes < 60) return `${minutes}m ago`
+      if (minutes < 60) return `${minutes}${t('minutesAgo')}`
       const hours = Math.floor(minutes / 60)
-      if (hours < 24) return `${hours}h ago`
+      if (hours < 24) return `${hours}${t('hoursAgo')}`
       const days = Math.floor(hours / 24)
-      return `${days}d ago`
+      return `${days}${t('daysAgo')}`
     } catch {
       return ''
     }

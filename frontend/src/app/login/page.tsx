@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { normalizePhoneNumber } from '@/utils/phone'
 
 export default function LoginPage() {
@@ -13,6 +14,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [language, setLanguage] = useState('en')
   const { login } = useAuth()
+  const { t } = useLanguage()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,7 +27,7 @@ export default function LoginPage() {
       await login(normalized, password)
       router.replace('/dashboard')
     } catch (err: any) {
-      let errorMessage = 'Login failed.'
+      let errorMessage = t('loginFailed')
       if (err.response?.data?.detail) {
         const detail = err.response.data.detail
         if (typeof detail === 'string') {
@@ -54,9 +56,9 @@ export default function LoginPage() {
               ? 'bg-[#4ce434] text-white'
               : 'bg-white border border-gray-200 text-gray-600'
           }`}
-        >
-          English
-        </button>
+          >
+            {t('english')}
+          </button>
         <button
           onClick={() => setLanguage('am')}
           className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
@@ -65,7 +67,7 @@ export default function LoginPage() {
               : 'bg-white border border-gray-200 text-gray-600'
           }`}
         >
-          አማርኛ
+          {t('amharic')}
         </button>
       </div>
 
@@ -73,10 +75,10 @@ export default function LoginPage() {
         <div className="max-w-md w-full bg-white rounded-[2rem] border border-gray-100 shadow-sm p-10 space-y-8">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 tracking-tight">
-              Welcome to <br /> GebeyaAlert
+              {t('welcomeToGebeyaAlert')} <br /> {t('gebeyaAlert')}
             </h1>
             <p className="mt-4 text-gray-500 text-base">
-              Please enter your phone number to <br /> continue.
+              {t('pleaseEnterPhoneNumber')} <br /> {t('continue')}
             </p>
           </div>
 
@@ -86,7 +88,7 @@ export default function LoginPage() {
                 htmlFor="phone"
                 className="text-sm font-bold text-gray-800 ml-1"
               >
-                Phone Number
+                {t('phoneNumber')}
               </label>
               <input
                 id="phone"
@@ -94,7 +96,7 @@ export default function LoginPage() {
                 type="tel"
                 required
                 className="block w-full px-4 py-4 bg-white border border-gray-200 rounded-2xl text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500"
-                placeholder="e.g., +251912345678"
+                placeholder={t('phoneNumberPlaceholder')}
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
               />
@@ -105,7 +107,7 @@ export default function LoginPage() {
                 htmlFor="password"
                 className="text-sm font-bold text-gray-800 ml-1"
               >
-                Password
+                {t('password')}
               </label>
               <input
                 id="password"
@@ -113,7 +115,7 @@ export default function LoginPage() {
                 type="password"
                 required
                 className="block w-full px-4 py-4 bg-white border border-gray-200 rounded-2xl text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500"
-                placeholder="Enter your password"
+                placeholder={t('enterPassword')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -130,17 +132,17 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full flex justify-center py-4 px-4 text-lg font-bold rounded-2xl text-white bg-[#4ce434] hover:bg-[#45cc2f] transition-colors disabled:opacity-50"
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? t('loggingIn') : t('login')}
             </button>
           </form>
 
           <p className="text-center text-sm text-gray-500">
-            do not have an account?{' '}
+            {t('doNotHaveAccount')}{' '}
             <Link
               href="/signup"
               className="font-bold text-[#4ce434] hover:underline"
             >
-              Sign Up.
+              {t('signUp')}.
             </Link>
           </p>
         </div>

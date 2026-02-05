@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { normalizePhoneNumber } from '@/utils/phone'
 
 export default function SignupPage() {
@@ -13,6 +14,7 @@ export default function SignupPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { register } = useAuth()
+  const { t } = useLanguage()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,7 +27,7 @@ export default function SignupPage() {
       await register(normalized, password, language)
       router.push('/dashboard')
     } catch (err: any) {
-      let errorMessage = 'Sign up failed. Please check your number and try again.'
+      let errorMessage = t('signupFailed')
       if (err.response?.data?.detail) {
         const detail = err.response.data.detail
         if (typeof detail === 'string') {
@@ -53,16 +55,16 @@ export default function SignupPage() {
           className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
             language === 'en' ? 'bg-[#4ce434] text-white' : 'bg-white border border-gray-200 text-gray-600'
           }`}
-        >
-          English
-        </button>
+          >
+            {t('english')}
+          </button>
         <button
           onClick={() => setLanguage('am')}
           className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
             language === 'am' ? 'bg-[#4ce434] text-white' : 'bg-white border border-gray-200 text-gray-600'
           }`}
         >
-          አማርኛ
+          {t('amharic')}
         </button>
       </div>
 
@@ -71,10 +73,10 @@ export default function SignupPage() {
         <div className="max-w-md w-full bg-white rounded-[2rem] border border-gray-100 shadow-sm p-10 space-y-8">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 tracking-tight">
-              Join <br /> GebeyaAlert
+              {t('joinGebeyaAlert')} <br /> {t('gebeyaAlert')}
             </h1>
             <p className="mt-4 text-gray-500 text-base">
-              Create an account to start <br /> tracking crop prices.
+              {t('createAccountToStart')} <br /> {t('trackingCropPrices')}
             </p>
           </div>
 
@@ -82,7 +84,7 @@ export default function SignupPage() {
             {/* Phone Number Field */}
             <div className="space-y-2 text-left">
               <label htmlFor="phone" className="text-sm font-bold text-gray-800 ml-1">
-                Phone Number
+                {t('phoneNumber')}
               </label>
               <input
                 id="phone"
@@ -90,7 +92,7 @@ export default function SignupPage() {
                 type="tel"
                 required
                 className="block w-full px-4 py-4 bg-white border border-gray-200 rounded-2xl text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500"
-                placeholder="e.g., +251912345678"
+                placeholder={t('phoneNumberPlaceholder')}
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
               />
@@ -99,7 +101,7 @@ export default function SignupPage() {
             {/* Password Field */}
             <div className="space-y-2 text-left">
               <label htmlFor="password" className="text-sm font-bold text-gray-800 ml-1">
-                Password
+                {t('password')}
               </label>
               <input
                 id="password"
@@ -107,7 +109,7 @@ export default function SignupPage() {
                 type="password"
                 required
                 className="block w-full px-4 py-4 bg-white border border-gray-200 rounded-2xl text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500"
-                placeholder="Enter your password"
+                placeholder={t('enterPassword')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -116,7 +118,7 @@ export default function SignupPage() {
             {/* Language Selection (Visual Select) */}
             <div className="space-y-2 text-left">
               <label htmlFor="language" className="text-sm font-bold text-gray-800 ml-1">
-                Preferred Language
+                {t('preferredLanguage')}
               </label>
               <select
                 id="language"
@@ -125,10 +127,10 @@ export default function SignupPage() {
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
               >
-                <option value="en">English</option>
-                <option value="am">Amharic</option>
-                <option value="om">Afaan Oromo</option>
-                <option value="ti">Tigrinya</option>
+                <option value="en">{t('english')}</option>
+                <option value="am">{t('amharic')}</option>
+                <option value="om">{t('afaanOromo')}</option>
+                <option value="ti">{t('tigrinya')}</option>
               </select>
             </div>
 
@@ -143,17 +145,17 @@ export default function SignupPage() {
               disabled={loading}
               className="w-full flex justify-center py-4 px-4 text-lg font-bold rounded-2xl text-white bg-[#4ce434] hover:bg-[#45cc2f] transition-colors disabled:opacity-50"
             >
-              {loading ? 'Creating Account...' : 'Sign Up'}
+              {loading ? t('creatingAccount') : t('signUp')}
             </button>
           </form>
 
           <p className="text-center text-sm text-gray-500">
-            already have an account?{' '}
+            {t('alreadyHaveAccount')}{' '}
             <Link
               href="/login"
               className="font-bold text-[#4ce434] hover:underline"
             >
-              Sign In.
+              {t('signIn')}.
             </Link>
           </p>
         </div>
