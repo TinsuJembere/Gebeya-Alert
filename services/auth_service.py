@@ -11,7 +11,7 @@ from models.user import User
 from schemas.auth import RegisterRequest
 from config import settings
 from utils.password import hash_password, verify_password
-from utils.password import hash_password, verify_password
+from utils.friendly_errors import get_friendly_message
 
 
 class AuthService:
@@ -36,7 +36,7 @@ class AuthService:
             if existing_user:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Phone number already registered"
+                    detail="This phone number is already registered. Please use a different phone number or try logging in."
                 )
 
             # Create new user with hashed password
@@ -58,18 +58,20 @@ class AuthService:
             if settings.DEBUG:
                 print(f"Database error in register_user: {e}")
                 print(traceback.format_exc())
+            friendly_message = get_friendly_message("database error")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Database error occurred during registration"
+                detail=friendly_message
             )
         except Exception as e:
             db.rollback()
             if settings.DEBUG:
                 print(f"Unexpected error in register_user: {e}")
                 print(traceback.format_exc())
+            friendly_message = get_friendly_message(str(e))
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Registration failed: {str(e)}"
+                detail=friendly_message
             )
 
     @staticmethod
@@ -99,18 +101,20 @@ class AuthService:
             if settings.DEBUG:
                 print(f"Database error in login_user: {e}")
                 print(traceback.format_exc())
+            friendly_message = get_friendly_message("database error")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Database error occurred during login"
+                detail=friendly_message
             )
         except Exception as e:
             db.rollback()
             if settings.DEBUG:
                 print(f"Unexpected error in login_user: {e}")
                 print(traceback.format_exc())
+            friendly_message = get_friendly_message(str(e))
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Login failed: {str(e)}"
+                detail=friendly_message
             )
 
     @staticmethod

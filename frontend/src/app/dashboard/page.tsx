@@ -1,14 +1,13 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { apiClient } from '@/lib/api'
 import { cachedFetch } from '@/utils/cache'
 import Header from '@/components/Header'
 import BottomNavigation from '@/components/BottomNavigation'
-import PriceForecast from '@/components/PriceForecast'
-import BestTimeToSell from '@/components/BestTimeToSell'
 import Link from 'next/link'
 
 interface PriceData {
@@ -31,11 +30,11 @@ interface PriceData {
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth()
   const { t } = useLanguage()
+  const router = useRouter()
   const [marketPrices, setMarketPrices] = useState<PriceData[]>([])
   const [dataLoading, setDataLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
-  const [selectedPrice, setSelectedPrice] = useState<PriceData | null>(null)
   const [autoRefresh, setAutoRefresh] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
 
@@ -249,7 +248,19 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={item.id}
-                    onClick={() => setSelectedPrice(item)}
+                    onClick={() => {
+                      if (item.crop_id && item.market_id) {
+                        // Navigate to insights page with query parameters
+                        const params = new URLSearchParams({
+                          cropId: item.crop_id.toString(),
+                          marketId: item.market_id.toString(),
+                          cropName: item.crop_name,
+                          marketName: item.market_name,
+                          currentPrice: item.price.toString(),
+                        })
+                        router.push(`/insights?${params.toString()}`)
+                      }
+                    }}
                     className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-all cursor-pointer active:scale-[0.98] group"
                   >
                     <div className="flex items-start justify-between mb-3">
@@ -314,40 +325,6 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
-
-        {/* Detailed AI Insights Modal/Expanded View */}
-        {selectedPrice && selectedPrice.crop_id && selectedPrice.market_id && (
-          <div className="mb-8 space-y-6 animate-in fade-in slide-in-from-bottom-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <span>🤖</span>
-                <span>{t('aiInsightsFor')} {selectedPrice.crop_name}</span>
-              </h2>
-              <button
-                onClick={() => setSelectedPrice(null)}
-                className="text-gray-500 hover:text-gray-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                ✕ {t('close')}
-              </button>
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <PriceForecast
-                cropId={selectedPrice.crop_id}
-                marketId={selectedPrice.market_id}
-                cropName={selectedPrice.crop_name}
-                marketName={selectedPrice.market_name}
-                currentPrice={selectedPrice.price}
-              />
-              <BestTimeToSell
-                cropId={selectedPrice.crop_id}
-                marketId={selectedPrice.market_id}
-                cropName={selectedPrice.crop_name}
-                marketName={selectedPrice.market_name}
-              />
-            </div>
-          </div>
-        )}
       </div>
 
       <BottomNavigation />

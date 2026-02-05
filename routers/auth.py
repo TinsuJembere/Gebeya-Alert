@@ -10,6 +10,7 @@ from database import get_db
 from schemas.auth import RegisterRequest, LoginRequest, TokenResponse, UserResponse
 from services.auth_service import AuthService
 from utils.jwt import create_access_token
+from utils.friendly_errors import get_friendly_message
 from config import settings
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -36,7 +37,7 @@ async def login_for_access_token(
                 print("[LOGIN] Authentication failed")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect phone number or OTP",
+                detail="The phone number or password you entered is incorrect. Please check and try again.",
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
@@ -51,13 +52,16 @@ async def login_for_access_token(
 
         return {"access_token": access_token, "token_type": "bearer"}
 
+    except HTTPException:
+        raise
     except Exception as e:
         if settings.DEBUG:
             print(f"[LOGIN] Error: {e}")
             print(traceback.format_exc())
+        friendly_message = get_friendly_message(str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Login failed"
+            detail=friendly_message
         )
 
 
@@ -100,7 +104,8 @@ async def register(
         if settings.DEBUG:
             print(f"[REGISTER] Error: {e}")
             print(traceback.format_exc())
+        friendly_message = get_friendly_message(str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Registration failed: {str(e)}"
+            detail=friendly_message
         )

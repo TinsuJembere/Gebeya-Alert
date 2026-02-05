@@ -11,6 +11,7 @@ from models.user import User
 from models.crop import Crop
 from models.market import Market
 from schemas.alert import AlertCreate
+from utils.friendly_errors import get_friendly_message
 
 
 class AlertService:
@@ -53,7 +54,7 @@ class AlertService:
         if not alert:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Alert not found"
+                detail="The alert you're looking for doesn't exist or has been deleted."
             )
         return alert
     
@@ -103,7 +104,7 @@ class AlertService:
         if not crop:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Crop with ID {crop_id} not found"
+                detail="The crop you selected doesn't exist. Please choose a different crop."
             )
         return crop
     
@@ -126,7 +127,7 @@ class AlertService:
         if not market:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Market with ID {market_id} not found"
+                detail="The market you selected doesn't exist. Please choose a different market."
             )
         return market
     
@@ -151,7 +152,7 @@ class AlertService:
         if alert.user_id != user_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="You don't have permission to access this alert"
+                detail="You can only view or delete your own alerts."
             )
         
         return alert
@@ -190,8 +191,7 @@ class AlertService:
         if existing_alert:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Alert already exists for this crop and market. "
-                       f"Use DELETE to remove existing alert (ID: {existing_alert.id}) or update target price"
+                detail="You already have an alert set for this crop and market. Please delete the existing alert first or choose a different crop or market."
             )
         
         # Create new alert

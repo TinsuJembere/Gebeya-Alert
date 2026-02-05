@@ -79,10 +79,12 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
                 print(traceback.format_exc())
                 print(f"{'='*60}\n")
             # Return error response with CORS headers
+            from utils.friendly_errors import get_friendly_message
             origin = request.headers.get("origin", "http://localhost:3000")
+            friendly_message = get_friendly_message(str(e))
             return JSONResponse(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                content={"detail": f"Internal server error: {str(e)}"},
+                content={"detail": friendly_message},
                 headers={
                     "Access-Control-Allow-Origin": origin,
                     "Access-Control-Allow-Credentials": "true",
@@ -112,7 +114,9 @@ if settings.DEBUG:
 # Exception handlers to prevent connection resets
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    """Handle validation errors gracefully."""
+    """Handle validation errors gracefully with user-friendly messages."""
+    from utils.friendly_errors import format_validation_errors
+    
     # Include CORS headers
     headers = {
         "Access-Control-Allow-Origin": request.headers.get("origin", "http://localhost:3000"),
@@ -120,15 +124,21 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
         "Access-Control-Allow-Headers": "*",
     }
+    
+    # Convert technical validation errors to friendly messages
+    friendly_message = format_validation_errors(exc.errors())
+    
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content={"detail": exc.errors()},
+        content={"detail": friendly_message},
         headers=headers,
     )
 
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):
-    """Handle HTTP exceptions gracefully."""
+    """Handle HTTP exceptions gracefully with user-friendly messages."""
+    from utils.friendly_errors import get_friendly_http_error
+    
     # Include CORS headers
     headers = {
         "Access-Control-Allow-Origin": request.headers.get("origin", "http://localhost:3000"),
@@ -136,15 +146,21 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
         "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
         "Access-Control-Allow-Headers": "*",
     }
+    
+    # Convert technical error to friendly message
+    friendly_message = get_friendly_http_error(exc.status_code, str(exc.detail))
+    
     return JSONResponse(
         status_code=exc.status_code,
-        content={"detail": exc.detail},
+        content={"detail": friendly_message},
         headers=headers,
     )
 
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
-    """Handle all other exceptions to prevent connection resets."""
+    """Handle all other exceptions to prevent connection resets with user-friendly messages."""
+    from utils.friendly_errors import get_friendly_message
+    
     # Always include CORS headers even on errors
     headers = {
         "Access-Control-Allow-Origin": request.headers.get("origin", "http://localhost:3000"),
@@ -154,20 +170,21 @@ async def general_exception_handler(request: Request, exc: Exception):
     }
     
     if settings.DEBUG:
-        # In debug mode, show full traceback
+        # In debug mode, log full error but still show friendly message to user
+        print(f"ERROR: {type(exc).__name__}: {exc}")
+        print(traceback.format_exc())
+        friendly_message = get_friendly_message(str(exc))
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={
-                "detail": str(exc),
-                "traceback": traceback.format_exc()
-            },
+            content={"detail": friendly_message},
             headers=headers,
         )
     else:
-        # In production, hide internal errors
+        # In production, show friendly message
+        friendly_message = get_friendly_message(str(exc))
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={"detail": "Internal server error"},
+            content={"detail": friendly_message},
             headers=headers,
         )
 
