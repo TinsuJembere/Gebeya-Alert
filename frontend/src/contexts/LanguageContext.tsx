@@ -34,6 +34,10 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user?.language])
 
+  const setLanguage = useCallback((lang: Language) => {
+    setLanguageState(lang)
+  }, [])
+
   const t = useCallback(
     (key: keyof typeof import('@/utils/translations').translations.en): string => {
       return getTranslation(key, language)
