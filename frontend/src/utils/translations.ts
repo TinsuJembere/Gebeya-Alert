@@ -206,7 +206,7 @@ export const translations = {
     daysAgo: 'ቀን በፊት',
   },
   om: {
-    welcome: 'Baga nagaan dhufte, Barsiisaa!',
+    welcome: 'Baga nagaan dhuftan!',
     setPriceAlert: 'Gatii Beeksisa Gochi',
     todaysMarketPrices: 'Gatii Sooda Har\'a',
     myActiveAlerts: 'Beeksisawwan Koo Hojii Qaban',
