@@ -1,5 +1,5 @@
 # GebeyaAlert - Agricultural Price Alert System for African Farmers
-
+watch live on: https://gebeya-alert-gg73.vercel.app
 A production-ready, mobile-first platform designed to empower African farmers with real-time market intelligence and AI-powered selling recommendations. Built for low-bandwidth environments with offline support.
 
 ## Problem Statement
