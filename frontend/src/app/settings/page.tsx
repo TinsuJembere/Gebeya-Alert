@@ -72,12 +72,9 @@ export default function SettingsPage() {
       
       await apiClient.updateCurrentUser(updateData);
       setSuccess(true);
-      // Refresh user data to update language preference
+      // Refresh user data to update language preference in AuthContext
+      // The LanguageContext will automatically update when user.language changes via useEffect
       await refreshUser();
-      // Update language context if language was changed
-      if (updateData.language) {
-        setLanguageContext(updateData.language as any);
-      }
       setTimeout(() => setSuccess(false), 3000);
     } catch (err: any) {
       let errorMessage = "Failed to save changes. Please try again.";

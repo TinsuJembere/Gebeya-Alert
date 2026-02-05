@@ -17,15 +17,22 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>('en')
 
   useEffect(() => {
-    // Set language from user preference
+    // Set language from user preference, default to 'en' if not set
     if (user?.language) {
-      setLanguageState(user.language as Language)
+      // Validate that the language is a valid Language type
+      const validLanguages: Language[] = ['en', 'am', 'om', 'ti']
+      if (validLanguages.includes(user.language as Language)) {
+        setLanguageState(user.language as Language)
+      } else {
+        // If invalid language, default to English
+        setLanguageState('en')
+      }
+    } else {
+      // If user is logged in but no language preference, default to English
+      // If user is not logged in, also default to English
+      setLanguageState('en')
     }
   }, [user?.language])
-
-  const setLanguage = useCallback((lang: Language) => {
-    setLanguageState(lang)
-  }, [])
 
   const t = useCallback(
     (key: keyof typeof import('@/utils/translations').translations.en): string => {
