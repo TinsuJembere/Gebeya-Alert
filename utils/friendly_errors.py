@@ -3,7 +3,6 @@ User-friendly error messages for farmers.
 Converts technical errors into simple, understandable messages.
 """
 from typing import Dict, Any, List
-from fastapi import RequestValidationError
 
 
 # Mapping of technical error patterns to friendly messages
