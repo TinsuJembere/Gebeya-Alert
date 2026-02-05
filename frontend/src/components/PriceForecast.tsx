@@ -10,7 +10,7 @@ interface PriceForecastProps {
   marketId: number
   cropName: string
   marketName: string
-  currentPrice: number
+  currentPrice?: number
 }
 
 interface Prediction {
@@ -141,12 +141,14 @@ export default function PriceForecast({
         </p>
       </div>
 
-      <div className="mt-4 pt-4 border-t border-gray-100">
-        <div className="flex items-center justify-between text-xs text-gray-500">
-          <span>{t('currentPriceLabel')}: {currentPrice.toFixed(0)} ETB</span>
-          <span>{t('predicted')}: {prediction.predicted_price.toFixed(0)} ETB</span>
+      {currentPrice && (
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="flex items-center justify-between text-xs text-gray-500">
+            <span>{t('currentPriceLabel')}: {currentPrice.toFixed(0)} ETB</span>
+            <span>{t('predicted')}: {prediction.predicted_price.toFixed(0)} ETB</span>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
